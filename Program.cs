@@ -1,4 +1,6 @@
 using ASPNETCoreIdentityDemo.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +11,19 @@ namespace ASPNETCoreIdentityDemo
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+
+            })
+            .AddCookie()
+            .AddGoogle(googleOptions =>
+            {
+                googleOptions.ClientId = builder.Configuration["Authentication:ClientId"];
+                googleOptions.ClientSecret = builder.Configuration["Authentication:ClientSecret"];
+            });
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
